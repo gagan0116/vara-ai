@@ -1,6 +1,6 @@
 # VARA.ai
 
-![Amazon Nova](https://img.shields.io/badge/Amazon%20Nova-Powered-blue?style=for-the-badge&logo=amazon)
+![Amazon Nova](https://img.shields.io/badge/Amazon%20Nova-Powered-FF9900?style=for-the-badge&logo=amazon)
 ![Python](https://img.shields.io/badge/Python-3.11+-green?style=for-the-badge&logo=python)
 ![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-purple?style=for-the-badge)
 ![Multi-Agent](https://img.shields.io/badge/Multi--Agent-5%20Agents-orange?style=for-the-badge)
@@ -8,19 +8,19 @@
 
 > **A multi-agent customer support platform built with Amazon Nova, Neo4j, and MCP that delivers verified refund decisions with grounded, explainable reasoning from a policy knowledge graph.**
 
-### 🏆 VARA AI (Powered by Amazon Nova)
+### 🏆 Amazon Nova AI Hackathon Submission
 
 ---
 
-## 🏆 Amazon Nova Hackathon Submission
+## 🚀 Submission Links
 
-- **Submitter Type**: Team (Professional / Student)
-- **Category**: Agentic AI / Multimodal Understanding
-- **Text description**: VARA AI automates customer support refund workflows by orchestrating multiple agents powered by Amazon Nova's advanced reasoning (Nova 2 Pro) and multimodal understanding (Nova 2 Lite). The system synthesizes text, PDF invoices, and defect images, performs an agentic database verification loop using MCP tools, and references a Neo4j policy knowledge graph to output a verified, explainable decision in 90 seconds.
-- **Demo Video**: [YouTube Demo](#) #AmazonNova
-- **Code repo**: [GitHub Repository](https://github.com/gagan0116/mcp_customer_support)
-- **Live Demo**: [Public URL](https://storage.googleapis.com/mcp_frontend/index.html) (No login required)
-- **Bonus Blog Post**: [Read on builder.aws.com](#) <!-- Update with actual blog link -->
+| | |
+|---|---|
+| **Demo URL** | [https://staging.d1vug68j94viep.amplifyapp.com/](https://staging.d1vug68j94viep.amplifyapp.com/) |
+| **Demo Video** | [YouTube Demo](#) <!-- Update this with your actual video link --> |
+| **GitHub Repo** | [https://github.com/YourUsername/vara-ai](https://github.com/YourUsername/vara-ai) |
+
+> **No login required.** The demo is publicly accessible.
 
 ---
 
@@ -59,17 +59,15 @@ For each refund request, VARA AI:
 VARA AI leverages the cutting-edge capabilities of Amazon Nova to solve complex orchestration and reasoning challenges:
 
 - **Deep Reasoning**  
-  Enabled via `nova-2-pro-v1`. Used in the **Ontology**, **Critic**, and **Adjudicator** agents to support multi-step reasoning before generating schemas or refund decisions.
-- **Thought Traces**  
-  We retain Amazon Nova's output thought trace metadata to preserve reasoning context across turns and to support **auditability** of how decisions were reached.
+  Enabled via Nova's robust capabilities (`nova-pro-v1`). Used in the **Ontology**, **Critic**, and **Adjudicator** agents to support multi-step reasoning before generating schemas or refund decisions.
 - **High Media Resolution**  
-  Configured `media_resolution="high"` in the Defect Analyzer’s vision requests to capture fine-grained defects (e.g., small scratches, hairline cracks) from customer images.
+  Configured for the Defect Analyzer’s vision requests to capture fine-grained defects (e.g., small scratches, hairline cracks) from customer images using native Nova vision capabilities.
 - **Structured Output & Type-Safety**  
-  We use `response_schema` and `response_mime_type="application/json"` across agents to enforce strict, machine-validated outputs aligned with our **Neo4j** and **PostgreSQL** schemas.
+  We enforce strict, machine-validated JSON outputs aligned with our **Neo4j** and **PostgreSQL** schemas across all Nova model responses.
 - **Low-Latency Tool Loops**  
-  We run the Database Verification Agent on `nova-2-lite-v1` to power fast, multi-turn verification loops where the model selects and executes MCP tools.
+  We run the Database Verification Agent on `nova-lite-v1` to power fast, multi-turn verification loops where the model selects and executes MCP tools autonomously.
 - **Multimodal Perception & Synthesis**  
-  We merge Amazon Nova's visual findings from defect images with invoice fields and email context into a single evidence bundle for grounded adjudication.
+  We merge Nova's visual findings from defect images with invoice fields and email context into a single evidence bundle for grounded adjudication.
 
 ---
 
@@ -89,24 +87,22 @@ A multi-agent “policy compiler” converts unstructured T&C PDFs into a valida
 ![End-to-end workflow: email intake to adjudication and response](https://storage.googleapis.com/markdown_imgs/end-to-end%20Refund%20Workflow.png)
 
 Once the policy graph exists, the runtime workflow processes each incoming customer email:
-1. **Intake**: Gmail Watch triggers Cloud Run to ingest email and attachments into GCS.
-2. **Analysis**: MCP servers process invoice PDFs and analyze defect images (Amazon Nova Vision).
+1. **Intake**: Gmail Watch triggers ingestion of email and attachments.
+2. **Analysis**: MCP servers process invoice PDFs and analyze defect images (Nova Vision).
 3. **Verification**: Agentic DB loop (Postgres) resolves order records deterministically.
 4. **Adjudication**: Amazon Nova adjudicates the case by traversing the Neo4j policy graph (Grounded Reasoning).
 5. **Audit**: Every stage persists artifacts for full reproducibility.
 
 ---
 
-## 🛠️ Google Tech Stack
-
-![Google Technology Stack used in VARA AI](https://storage.googleapis.com/markdown_imgs/Googl's%20Tech%20Stack%20.png)
+## 🛠️ AWS & Amazon Nova Tech Stack
 
 **Core Infrastructure:**
-- **AI**: Amazon Nova (Pro & Lite)
+- **AI**: Amazon Nova (Pro & Lite) - Native API Integration
 - **Framework**: Model Context Protocol (MCP), FastMCP, FastAPI
-- **Storage/DB**: Google Cloud Storage, Cloud SQL (PostgreSQL), Neo4j AuraDB, Firestore
-- **Compute**: Cloud Run, Cloud Tasks, Cloud Build
-- **Events**: Cloud Pub/Sub, Gmail API
+- **Storage/DB**: PostgreSQL, Neo4j AuraDB
+- **Compute / Hosting**: AWS App Runner (Backend), AWS Amplify (Frontend)
+- **Events**: Gmail API
 
 ---
 
@@ -118,7 +114,7 @@ Once the policy graph exists, the runtime workflow processes each incoming custo
 - **UX Excellence**: Providing a guided dashboard that makes complex AI processes transparent.
 
 ### Challenges overcome
-- **Rate Limits (429s)**: Implemented robust backoff and retry logic for multi-stage model calls.
+- **Rate Limits (429s)**: Implemented robust backoff and retry logic for multi-stage model calls, and bypassed Bedrock quotas by using the Native Amazon Nova API.
 - **Explainability**: Using GraphRAG to ensure every decision is defensible and grounded in actual policy text rather than "hallucinated" general rules.
 - **Unstructured Data**: Developing custom parsing strategies for inconsistent retail T&C documents.
 
@@ -135,7 +131,7 @@ Once the policy graph exists, the runtime workflow processes each incoming custo
 ## 📁 Project Structure
 
 ```
-mcp_customer_support/
+VARA_AI_NOVA/
 ├── gmail-event-processor/   # 📧 Email Ingestion Service
 ├── mcp_processor/           # ⚙️ Main Processing Orchestrator
 ├── policy_compiler_agents/  # 🤖 Multi-Agent Graph Builder
@@ -143,7 +139,7 @@ mcp_customer_support/
 ├── doc_server/              # 📄 MCP Server - Document Processing
 ├── defect_analyzer/         # 🔍 MCP Server - Vision Analysis
 ├── neo4j_graph_engine/      # 🔷 Neo4j Operations
-├── vara-ai-frontend/        # 🖥️ Web Dashboard UI
+├── vara-ai-frontend/        # 🖥️ Web Dashboard UI (Hosted on Amplify)
 └── scripts/                 # 🛠️ Setup & Utility Scripts
 ```
 
@@ -155,4 +151,4 @@ mcp_customer_support/
 - **Naga Sai Satish Amara**
 
 ---
-*Migrated to Amazon Nova, 2026.*
+*Migrated to Amazon Nova for the Amazon Nova AI Hackathon, 2026.*
