@@ -12,119 +12,222 @@
 
 ---
 
-## 🚀 Submission Links
+## 🚀 Live Demo
 
 | | |
 |---|---|
 | **Demo URL** | [https://staging.d1vug68j94viep.amplifyapp.com/](https://staging.d1vug68j94viep.amplifyapp.com/) |
-| **Demo Video** | [YouTube Demo](#) <!-- Update this with your actual video link --> |
-| **GitHub Repo** | [https://github.com/YourUsername/vara-ai](https://github.com/YourUsername/vara-ai) |
+| **Demo Video** | [YouTube Demo](#) <!-- Add your YouTube link here --> |
 
 > **No login required.** The demo is publicly accessible.
 
 ---
 
-## 💡 Inspiration
+## 📋 Problem Statement
 
-Refunds are one of those moments where trust either gets cemented—or quietly dies.
+Customer support teams spend **70%+ of their time** on repetitive refund/return requests. Each request requires:
+- Reading customer emails with attachments
+- Cross-referencing order databases
+- Consulting return policy documents
+- Making consistent decisions
 
-It usually starts small: a damaged item, a missing part, the wrong SKU. The customer doesn’t wake up wanting a fight; they just want it made right. But the second they hit “Contact Support,” time starts stretching. They attach the invoice, maybe a couple of photos, explain the issue… and then they wait. And wait. Somewhere on the other side, an agent is juggling dozens of tickets, trying to interpret blurry images, open PDFs that don’t parse cleanly, cross-check order records, and translate a policy document into a decision that won’t get them in trouble later.
-
-The customer feels ignored. The company feels attacked. And the most frustrating part is that neither side is being unreasonable—the process is.
-
-This isn’t a corner case either. Returns are massive and messy at scale: U.S. retailers estimate that **15.8% of annual sales will be returned in 2025 — roughly $849.9B** ([NRF](https://nrf.com/media-center/press-releases/consumers-expected-to-return-nearly-850-billion-in-merchandise-in-2025)). And the pressure isn’t only operational—**return fraud is ~9% of all returns**, costing about **$76.5B annually** ([Reuters](https://www.reuters.com/business/retail-consumer/ups-company-deploys-ai-spot-fakes-amid-surge-holiday-returns-2025-12-18/?utm_source=chatgpt.com)).
-
-We built **VARA AI** because the refund experience shouldn’t be a slow, opaque negotiation. It should feel like: *“We received your request, we understand what happened, here’s the decision, here’s why, and here’s what happens next.”* Fast enough that customers don’t have to chase—and accountable enough that companies can trust the outcome.
-
-**Speed without guesswork, automation without losing trust.**
+**VARA.ai automates this entire workflow using Amazon Nova's advanced reasoning capabilities.**
 
 ---
 
-## 🎯 What it does
+## 💡 Solution Overview
 
-VARA AI automates the refund customer support workflow from intake to decision. It processes a refund request in approximately **90 seconds** and produces an outcome that is **grounded in evidence** and **explainable**.
+VARA.ai is an end-to-end AI system that:
 
-For each refund request, VARA AI:
-- **Ingests the case** from the customer email and attachments (invoice PDFs and defect images).
-- **Extracts structured information** from documents (PDF parsing & Vision analysis).
-- **Verifies key fields** against backend records via a database verification service.
-- **Retrieves relevant policy context** using GraphRAG over a structured policy knowledge graph.
-- **Generates a decision**: **Approve / Deny / Manual Review**, including the refund action or next step.
-- **Produces an explanation** that references the evidence used and the policy basis for the outcome.
-
----
-
-## 🔷 Amazon Nova Features Implemented
-
-VARA AI leverages the cutting-edge capabilities of Amazon Nova to solve complex orchestration and reasoning challenges:
-
-- **Deep Reasoning**  
-  Enabled via Nova's robust capabilities (`nova-pro-v1`). Used in the **Ontology**, **Critic**, and **Adjudicator** agents to support multi-step reasoning before generating schemas or refund decisions.
-- **High Media Resolution**  
-  Configured for the Defect Analyzer’s vision requests to capture fine-grained defects (e.g., small scratches, hairline cracks) from customer images using native Nova vision capabilities.
-- **Structured Output & Type-Safety**  
-  We enforce strict, machine-validated JSON outputs aligned with our **Neo4j** and **PostgreSQL** schemas across all Nova model responses.
-- **Low-Latency Tool Loops**  
-  We run the Database Verification Agent on `nova-lite-v1` to power fast, multi-turn verification loops where the model selects and executes MCP tools autonomously.
-- **Multimodal Perception & Synthesis**  
-  We merge Nova's visual findings from defect images with invoice fields and email context into a single evidence bundle for grounded adjudication.
+1. **Monitors Gmail** for incoming refund/return requests
+2. **Classifies emails** using Amazon Nova's understanding capabilities
+3. **Extracts order details** from email text and invoice attachments (Nova Vision)
+4. **Verifies against database** using MCP-connected PostgreSQL
+5. **Adjudicates requests** by traversing a policy knowledge graph
+6. **Records decisions** with full reasoning transparency
 
 ---
 
-## 🏗️ How we built it
+## 🧪 Testing Instructions
 
-We built VARA AI as two connected pipelines: an offline policy compiler that turns messy T&Cs into a traceable Neo4j knowledge graph, and an online adjudication workflow that processes each refund email end-to-end.
+### Demo URL
+**[https://staging.d1vug68j94viep.amplifyapp.com/](https://staging.d1vug68j94viep.amplifyapp.com/)**
 
-### 1. Policy Knowledge Graph Pipeline (GraphRAG)
-![Architectural Diagram of the Multi-Agent Knowledge Graph Pipeline](https://storage.googleapis.com/markdown_imgs/Multi%20Agent%20Policy%20Knowledge%20Graph%20Pipeline.png)
-
-A multi-agent “policy compiler” converts unstructured T&C PDFs into a validated Neo4j policy graph. Highlights:
-- **Ontology Agent**: Designs the graph schema (node/relationship types).
-- **Extraction Agent**: Performs 3-phase triplet extraction and deterministic linking.
-- **Critic Agent**: Validates schema coverage and Cypher quality via a self-correction loop.
-
-### 2. End-to-end Refund Workflow (Email → Decision)
-![End-to-end workflow: email intake to adjudication and response](https://storage.googleapis.com/markdown_imgs/end-to-end%20Refund%20Workflow.png)
-
-Once the policy graph exists, the runtime workflow processes each incoming customer email:
-1. **Intake**: Gmail Watch triggers ingestion of email and attachments.
-2. **Analysis**: MCP servers process invoice PDFs and analyze defect images (Nova Vision).
-3. **Verification**: Agentic DB loop (Postgres) resolves order records deterministically.
-4. **Adjudication**: Amazon Nova adjudicates the case by traversing the Neo4j policy graph (Grounded Reasoning).
-5. **Audit**: Every stage persists artifacts for full reproducibility.
+**No login required.** The demo is publicly accessible.
 
 ---
 
-## 🛠️ AWS & Amazon Nova Tech Stack
+### Feature 1: Email Processing Pipeline
 
-**Core Infrastructure:**
-- **AI**: Amazon Nova (Pro & Lite) - Native API Integration
-- **Framework**: Model Context Protocol (MCP), FastMCP, FastAPI
-- **Storage/DB**: PostgreSQL, Neo4j AuraDB
-- **Compute / Hosting**: AWS App Runner (Backend), AWS Amplify (Frontend)
-- **Events**: Gmail API
+1. **Open the demo URL** — You'll land on the Email Pipeline page
 
----
+2. **Select a scenario** from the "Select Demo Scenario" dropdown
 
-## 📈 Accomplishments & Learnings
+3. **View the request** — Email content and attached invoice displayed on the left panel
 
-### What we're proud of
-- **End-to-end automation**: A single return email triggers a machine-verified outcome in 90s.
-- **Policy Ingestion**: Transforming messy PDFs into a structured, citation-backed knowledge graph using multi-agent orchestration.
-- **UX Excellence**: Providing a guided dashboard that makes complex AI processes transparent.
+4. **Click "Process Email Request"** to trigger the full AI pipeline
 
-### Challenges overcome
-- **Rate Limits (429s)**: Implemented robust backoff and retry logic for multi-stage model calls, and bypassed Bedrock quotas by using the Native Amazon Nova API.
-- **Explainability**: Using GraphRAG to ensure every decision is defensible and grounded in actual policy text rather than "hallucinated" general rules.
-- **Unstructured Data**: Developing custom parsing strategies for inconsistent retail T&C documents.
+5. **Watch the pipeline** execute in real-time (~1 minute to complete):
+   - Email Classification
+   - Order Extraction (Nova Vision)
+   - Database Verification
+   - Policy Adjudication (Deep Reasoning)
+   - Decision with Explanation
+
+> **Note:** In production, this pipeline runs automatically when a customer sends an email to `vara.assist@gmail.com`. The demo uses pre-defined scenarios because processing a real email requires the corresponding order to exist in our database. This website serves as a prototype to demonstrate the fully automated end-to-end pipeline.
 
 ---
 
-## 🚀 Future Roadmap
+### Feature 2: Policy Knowledge Base
 
-- **Voice-based Support**: Adding a voice interface for refund intake while keeping the same robust reasoning backend.
-- **Two-way Automation**: Enabling the system to follow up with customers for missing info (e.g., "Please upload a clearer image of the scratch").
-- **Risk & Fraud Scoring**: Integrated analysis of return history to flag high-risk cases for human agents.
+1. **Click "Policy Knowledge Base"** in the navigation bar
+
+#### Option A: View Existing Graph
+- Click **"Visualize Graph"** to view the pre-compiled knowledge graph (Best Buy return policy)
+- **Interactive controls:**
+  - Scroll to zoom
+  - Drag to pan
+  - Click nodes for details
+
+#### Option B: Compile New Policy (20-25 min)
+1. Upload any company's terms and conditions PDF
+2. Full compilation takes ~20-25 minutes (based on document length), orchestrated entirely by Amazon Nova Pro
+
+**The multi-agent system will automatically:**
+```
+📄 Parse PDF → Markdown (LlamaParse)
+        ↓
+🧠 Design graph schema (Ontology Agent)
+        ↓
+📤 Extract entities & relationships (Extraction Agent)
+        ↓
+🔍 Validate quality (Critic Agent)
+        ↓
+🔨 Build Neo4j graph (Builder Agent)
+```
+
+---
+
+## 🤖 Multi-Agent System
+
+### 5 Specialized Agents
+
+| Agent | Role | Amazon Nova Feature |
+|-------|------|---------------------|
+| **Ontology Agent** | Designs knowledge graph schema from policy documents | Deep Reasoning |
+| **Extraction Agent** | Extracts policy rules, conditions, and relationships | Content Extraction |
+| **Critic Agent** | Validates extraction quality and suggests improvements | System Prompting |
+| **Builder Agent** | Constructs Neo4j knowledge graph with Cypher queries | Structured Output |
+| **Adjudicator Agent** | Makes refund decisions with full reasoning | Policy Navigation |
+
+---
+
+## 🔧 MCP (Model Context Protocol) Servers
+
+VARA.ai uses **FastMCP** to create modular, tool-based AI capabilities:
+
+### `db_verification_server` — Order Database Access
+| Tool | Description |
+|------|-------------|
+| `list_orders_by_customer_email` | Fetch order history for a customer email |
+| `find_order_by_invoice_number` | Lookup single order with full details |
+| `find_order_by_order_invoice_id` | Alternative lookup by order_invoice_id |
+| `list_order_items_by_order_invoice_id` | Get line items for an order |
+| `verify_from_email_matches_customer` | Check if email exists in customers table |
+| `get_customer_orders_with_items` | Deep fetch with order items |
+| `select_order_id` | LLM-assisted order matching |
+| `llm_find_orders` | Generate SQL from natural language |
+
+### `doc_server` — Invoice Processing
+| Tool | Description |
+|------|-------------|
+| `process_invoice` | Decode base64 PDF, parse text, and save to file |
+
+### `defect_analyzer` — Product Defect Analysis
+| Tool | Description |
+|------|-------------|
+| `analyze_defect_image` | Analyze product defect images using Nova Vision |
+
+---
+
+## 🔷 Core Services
+
+### Neo4j Graph Engine
+Policy knowledge graph operations for storing and querying return policies.
+
+| Function | Description |
+|----------|-------------|
+| `check_neo4j_connection` | Test database connectivity |
+| `get_graph_schema` | Retrieve node labels and relationships |
+| `get_graph_statistics` | Node/relationship counts |
+| `execute_cypher_query` | Run read-only Cypher queries |
+| `execute_cypher_write` | Run write Cypher (CREATE, MERGE) |
+| `execute_cypher_batch` | Bulk graph construction |
+| `create_node` | Create/merge a node with properties |
+| `create_relationship` | Create relationship between nodes |
+| `create_schema_constraints` | Set up indexes and constraints |
+| `clear_graph` | Delete all data (destructive) |
+| `validate_graph_integrity` | Check for missing citations, orphans |
+| `sample_graph_data` | Get sample nodes for verification |
+
+### Policy Engine
+PDF document parsing using LlamaParse for policy ingestion.
+
+| Function | Description |
+|----------|-------------|
+| `parse_all_policy_documents` | Parse all PDFs in directory to combined Markdown |
+| `parse_single_policy_document` | Parse a single PDF document |
+
+---
+
+## 🛠️ Tech Stack
+
+<table>
+<tr>
+<td>
+
+**AI/ML**
+- Amazon Nova API (Native)
+- `strands-amazon-nova` SDK
+- Multi-Agent System
+
+</td>
+<td>
+
+**Databases**
+- PostgreSQL (psycopg2)
+- Neo4j Aura
+
+</td>
+<td>
+
+**Cloud & Hosting**
+- AWS App Runner (Backend)
+- AWS Amplify (Frontend)
+- Google Cloud (Email Ingestion)
+- Cloud SQL Postgres
+
+</td>
+<td>
+
+**Frameworks**
+- FastAPI
+- uvicorn
+- FastMCP (mcp[cli])
+- SSE-Starlette
+
+</td>
+<td>
+
+**Processing**
+- LlamaParse
+- pypdf
+- BeautifulSoup4
+- Pillow
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -132,23 +235,150 @@ Once the policy graph exists, the runtime workflow processes each incoming custo
 
 ```
 VARA_AI_NOVA/
-├── gmail-event-processor/   # 📧 Email Ingestion Service
-├── mcp_processor/           # ⚙️ Main Processing Orchestrator
-├── policy_compiler_agents/  # 🤖 Multi-Agent Graph Builder
-├── db_verification/         # 🗄️ MCP Server - Database
-├── doc_server/              # 📄 MCP Server - Document Processing
-├── defect_analyzer/         # 🔍 MCP Server - Vision Analysis
-├── neo4j_graph_engine/      # 🔷 Neo4j Operations
-├── vara-ai-frontend/        # 🖥️ Web Dashboard UI (Hosted on Amplify)
-└── scripts/                 # 🛠️ Setup & Utility Scripts
+│
+├── gmail-event-processor/           # 📧 Email Ingestion Service
+│   ├── app.py                       # FastAPI Pub/Sub endpoint
+│   ├── classifier.py                # Nova email classification
+│   ├── gmail_processor.py           # Gmail API integration
+│   ├── store_email.py               # Storage queue
+│   ├── secret_manager.py            # Credentials management
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── mcp_processor/                   # ⚙️ Main Processing Service (AWS App Runner)
+│   ├── app.py                       # Tasks endpoint
+│   ├── processor.py                 # MCPProcessor orchestrator
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── policy_compiler_agents/          # 🤖 Multi-Agent System
+│   ├── agent.py                     # Pipeline orchestrator
+│   ├── ontology_agent.py            # Graph schema design
+│   ├── extraction_agent.py          # Entity & relationship extraction
+│   ├── critic_agent.py              # Quality validation
+│   ├── adjuciator_agent.py          # Decision making mechanism
+│   ├── graph_traversal.py           # Policy graph traversal
+│   ├── source_retrieval.py          # Citation lookup
+│   ├── visualize_graph.py           # Graph visualization
+│   ├── ingestion.py                 # Document ingestion
+│   └── tools.py                     # Shared utilities
+│
+├── db_verification/                 # 🗄️ MCP Server - Database
+│   ├── db_verification_server.py    # MCP tools for order lookup
+│   ├── db.py                        # Cloud SQL Postgres connector
+│   └── llm_sql_runner.py            # Natural language SQL
+│
+├── doc_server/                      # 📄 MCP Server - Document Processing
+│   └── mcp_doc_server.py            # Invoice PDF parsing
+│
+├── defect_analyzer/                 # 🔍 MCP Server - Defect Analysis
+│   └── mcp_server.py                # Nova Vision defect analysis
+│
+├── neo4j_graph_engine/              # 🔷 Neo4j Graph Operations
+│   ├── mcp_server.py                # Graph query functions
+│   └── db.py                        # Neo4j async driver
+│
+├── policy_engine/                   # 📚 Policy Document Parser
+│   └── mcp_server.py                # LlamaParse integration
+│
+├── knowledge_base_server/           # 🌐 Policy Compiler Web Service (AWS App Runner)
+│   ├── main.py                      # FastAPI server with SSE
+│   ├── compiler_service.py          # Compilation orchestration
+│   └── static/                      # Web UI assets
+│
+├── vara-ai-frontend/                # 🖥️ Web Dashboard UI (AWS Amplify)
+│   └── public/                      # HTML/CSS/JS frontend files
+│
+├── bedrock_client.py                # ✨ Shared Amazon Nova API Handler
+├── mcp_client.py                    # 🧪 Active MCP client routing
+├── requirements.txt                 # Python dependencies
+├── Dockerfile                       # Container root base
+└── README.md                        # Project documentation
+```
+
+---
+
+## 🚀 Local Development Setup
+
+### Prerequisites
+
+- Python 3.11+
+- AWS Credentials / Nova Access tokens
+- Neo4j Aura instance
+- LlamaParse API key
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/YourUsername/vara-ai.git
+cd vara-ai
+
+# Create virtual environment
+python -m venv venv
+venv\Scripts\activate  # Windows
+# source venv/bin/activate  # macOS/Linux
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+# Amazon Nova Models
+AWS_REGION=us-east-1
+# Set this for Native Nova API access:
+AWS_BEARER_TOKEN_BEDROCK="your_api_token"
+NOVA_MODEL_PRO=us.amazon.nova-pro-v1:0
+NOVA_MODEL_LITE=us.amazon.nova-lite-v1:0
+
+# Neo4j Aura
+NEO4J_URI=neo4j+s://your-instance.databases.neo4j.io
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=your_neo4j_password
+
+# PostgreSQL (Cloud SQL configured)
+DB_HOST=your_host_ip
+DB_PORT=5432
+DB_NAME=refunds_db
+DB_USER=postgres
+DB_PASSWORD=your_db_password
+
+# LlamaParse
+LLAMA_CLOUD_API_KEY=your_llamaparse_key
+```
+
+### Running Locally
+
+```bash
+# Run the Main MCP Testing client
+python mcp_client.py
+
+# Run the backend Processor module
+cd mcp_processor
+python app.py
+
+# Run the Policy Compiler web service
+cd knowledge_base_server
+python main.py
 ```
 
 ---
 
 ## 👥 Contributors
 
-- **Gagan Vadlamudi** ([@gagan0116](https://github.com/gagan0116))
-- **Naga Sai Satish Amara**
+| Name | GitHub |
+|------|--------|
+| **Gagan Vadlamudi** | [@gagan0116](https://github.com/gagan0116) |
+| **Naga Sai Satish Amara** | |
 
 ---
-*Migrated to Amazon Nova for the Amazon Nova AI Hackathon, 2026.*
+
+## 🔗 Links
+
+- **GitHub:** [https://github.com/YourUsername/vara-ai](https://github.com/YourUsername/vara-ai)
+- **Live Demo:** [https://staging.d1vug68j94viep.amplifyapp.com/](https://staging.d1vug68j94viep.amplifyapp.com/)
+- **Hackathon:** [Amazon Nova AI Hackathon](#)
