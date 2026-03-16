@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+google-api-python-client
+google-auth
+google-cloud-secret-manager
+google-cloud-firestore
+google-genai
+beautifulsoup4
+google-cloud-storage
+google-cloud-tasks

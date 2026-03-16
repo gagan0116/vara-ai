@@ -1,0 +1,50 @@
+steps:
+  # Build Docker Image
+  - name: "gcr.io/cloud-builders/docker"
+    dir: "."
+    args:
+      - "build"
+      - "-t"
+      - "northamerica-northeast1-docker.pkg.dev/vara-483300/gmail-images/mcp-processor:latest"
+      - "-f"
+      - "mcp_processor/Dockerfile"
+      - "."
+
+  # Push Docker Image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "northamerica-northeast1-docker.pkg.dev/vara-483300/gmail-images/mcp-processor:latest"
+
+  # Deploy to Cloud Run
+  - name: "gcr.io/cloud-builders/gcloud"
+    args:
+      - "run"
+      - "deploy"
+      - "mcp-processor"
+      - "--image"
+      - "northamerica-northeast1-docker.pkg.dev/vara-483300/gmail-images/mcp-processor:latest"
+      - "--region"
+      - "northamerica-northeast1"
+      - "--platform"
+      - "managed"
+      - "--no-allow-unauthenticated"
+      - "--service-account"
+      - "mcp-runtime@vara-483300.iam.gserviceaccount.com"
+      - "--timeout"
+      - "300s"
+      - "--memory"
+      - "2Gi"
+      - "--cpu"
+      - "2"
+      - "--max-instances"
+      - "1"
+      - "--concurrency"
+      - "1"
+      - "--set-env-vars"
+      - "PROJECT_ROOT=/app,GCS_BUCKET_NAME=refunds_bucket,CLOUD_INSTANCE=vara-483300:us-central1:refunds-db-postgres,CLOUD_DB_NAME=refunds_db,CLOUD_DB_USER=dev_gagan_db,NEO4J_URI=neo4j+s://6adc931e.databases.neo4j.io,NEO4J_USER=neo4j"
+      - "--set-secrets"
+      - "NOVA_API_KEY=gemini-api-key:latest,CLOUD_DB_PASS=cloud-db-pass:latest,NEO4J_PASSWORD=neo4j-password:latest"
+
+options:
+  logging: CLOUD_LOGGING_ONLY

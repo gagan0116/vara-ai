@@ -1,0 +1,14 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+mcp[cli]
+google-cloud-storage
+cloud-sql-python-connector
+pg8000
+python-dotenv
+pypdf
+Pillow
+neo4j>=5.0.0
+sse-starlette
+openai
+boto3
+botocore

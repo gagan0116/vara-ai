@@ -1,0 +1,41 @@
+# Python virtual environment
+.venv/
+venv/
+ENV/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Secret Files
+credentials.json
+token.json
+.env
+gcp_keys.json
+
+invoices/*
+Sample_Database_Creation/invoice.sql
+
+# VS Code settings (optional, but recommended for personal projects)
+.vscode/
+
+# Project Artifacts (Generated parsed text files)
+artifacts/
+policy_docs/
+
+db_tester.py
+llm_query_tester.py
+attachments
+check_email_llm.py
+cloud_sql.py
+generate_invoice_insert_sql.py
+intitial_subscriber.py
+push_filtered_invoices.py
+storage_token.json
+token.json
+client_secret_*.json
+history_id.txt
+__pycache__/
+.env
+defect_images/
+venv/

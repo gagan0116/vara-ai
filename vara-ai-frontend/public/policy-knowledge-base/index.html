@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VARA-AI - Policy Compiler</title>
+    <meta name="description" content="Turn PDF Policies into queryable Knowledge Graphs using AI">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Critical CSS to prevent Flash of Unstyled Content (FOUC) -->
+    <style>
+        /* Prevent SVGs from being oversized on first paint */
+        svg:not([width]):not([height]) {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+    <link rel="stylesheet" href="../navbar.css">
+    <link rel="stylesheet" href="../hld-modal.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Vis.js for Graph Visualization -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+</head>
+
+<body>
+    <!-- Background Effects -->
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Shared Navbar (injected by navbar.js) -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Onboarding Banner -->
+    <div class="onboarding-banner" id="onboardingBanner">
+        <div class="onboarding-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </svg>
+        </div>
+        <div class="onboarding-content">
+            <h3 class="onboarding-title">Policy Knowledge Base</h3>
+            <p class="onboarding-text">Transform your PDF policies into a queryable knowledge graph. Upload policy
+                documents, and watch as AI parses, extracts entities, and builds a Neo4j graph. Tap the
+                <strong>i</strong> icons for explanations of each step.
+            </p>
+        </div>
+        <button class="onboarding-dismiss" id="dismissOnboarding">Got it</button>
+    </div>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Left Panel: Controls -->
+        <section class="panel">
+            <!-- Visualize Knowledge Base Section -->
+            <div class="panel-header">
+                <div class="panel-icon" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="18" cy="5" r="3" />
+                        <circle cx="6" cy="12" r="3" />
+                        <circle cx="18" cy="19" r="3" />
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                </div>
+                <h2 class="panel-title">Visualize Knowledge Base</h2>
+                <button class="info-icon" data-tooltip="visualize"
+                    tabindex="0" aria-label="Info about visualize">i</button>
+            </div>
+
+            <!-- Visualize Card -->
+            <div class="card">
+                <p class="card-description">View the current Knowledge Graph without recompiling</p>
+                <button id="viz-btn" class="btn btn-success">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polygon points="10 8 16 12 10 16 10 8" />
+                    </svg>
+                    Visualize Graph
+                </button>
+            </div>
+
+            <!-- Policy Upload Section -->
+            <div class="panel-header" style="margin-top: var(--spacing-xl);">
+                <div class="panel-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                </div>
+                <h2 class="panel-title">Policy Upload</h2>
+                <button class="info-icon" data-tooltip="upload"
+                    tabindex="0" aria-label="Info about upload">i</button>
+            </div>
+
+            <!-- Upload Card -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-number">1</span>
+                    <h3 class="card-title">Upload Policy Documents</h3>
+                </div>
+                <p class="card-description">Upload PDF policy documents to compile into a knowledge graph</p>
+
+                <div class="upload-zone" id="drop-zone">
+                    <input type="file" id="file-input" multiple accept=".pdf" class="hidden" style="display: none;">
+                    <label for="file-input" style="cursor: pointer; display: block;">
+                        <div class="upload-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                        </div>
+                        <div class="upload-text">
+                            <span class="upload-text-highlight">Click to upload</span> or drag and drop
+                        </div>
+                        <div class="upload-hint">PDF files only</div>
+                    </label>
+                    <div class="file-list" id="file-list"></div>
+                </div>
+
+                <button id="compile-btn" class="btn btn-primary" disabled style="margin-top: 16px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                    Start Compilation
+                </button>
+            </div>
+
+            <!-- Progress Card -->
+            <div class="card progress-section" id="status-card">
+                <div class="card-header">
+                    <span class="card-number">2</span>
+                    <h3 class="card-title">Compilation Progress</h3>
+                </div>
+
+                <div class="progress-header">
+                    <span class="progress-status" id="status-text">Initializing...</span>
+                    <span class="progress-percent" id="progress-percent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+                </div>
+
+                <!-- Pipeline Steps -->
+                <div class="pipeline-steps" id="pipeline-steps">
+                    <div class="pipeline-step" data-step="parsing">
+                        <div class="step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                            </svg>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-name">Document Parsing <button class="info-icon"
+                                    data-tooltip="parsing"
+                                    tabindex="0" aria-label="Info about parsing">i</button></div>
+                            <div class="step-description">Extracting text from PDF documents</div>
+                        </div>
+                        <span class="step-status">Pending</span>
+                    </div>
+                    <div class="pipeline-step" data-step="ontology">
+                        <div class="step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 16v-4M12 8h.01" />
+                            </svg>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-name">Ontology Design <button class="info-icon"
+                                    data-tooltip="ontology"
+                                    tabindex="0" aria-label="Info about ontology">i</button></div>
+                            <div class="step-description">Designing graph schema with Amazon Nova</div>
+                        </div>
+                        <span class="step-status">Pending</span>
+                    </div>
+                    <div class="pipeline-step" data-step="extraction">
+                        <div class="step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="16 18 22 12 16 6" />
+                                <polyline points="8 6 2 12 8 18" />
+                            </svg>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-name">Entity Extraction <button class="info-icon"
+                                    data-tooltip="extraction"
+                                    tabindex="0" aria-label="Info about extraction">i</button></div>
+                            <div class="step-description">Extracting entities & relationships</div>
+                        </div>
+                        <span class="step-status">Pending</span>
+                    </div>
+                    <div class="pipeline-step" data-step="validation">
+                        <div class="step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                <polyline points="22 4 12 14.01 9 11.01" />
+                            </svg>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-name">Critic Validation <button class="info-icon"
+                                    data-tooltip="validation"
+                                    tabindex="0" aria-label="Info about validation">i</button></div>
+                            <div class="step-description">Validating extraction quality</div>
+                        </div>
+                        <span class="step-status">Pending</span>
+                    </div>
+                    <div class="pipeline-step" data-step="building">
+                        <div class="step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <ellipse cx="12" cy="5" rx="9" ry="3" />
+                                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                            </svg>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-name">Graph Building <button class="info-icon"
+                                    data-tooltip="building"
+                                    tabindex="0" aria-label="Info about graph building">i</button></div>
+                            <div class="step-description">Constructing Neo4j knowledge graph</div>
+                        </div>
+                        <span class="step-status">Pending</span>
+                    </div>
+                </div>
+
+                <!-- Logs -->
+                <div class="logs-container" id="logs" style="margin-top: 16px;">
+                    <div class="log-entry">
+                        <span class="log-time">--:--:--</span>
+                        <span class="log-message">Waiting for compilation to start...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Panel: Graph Visualization -->
+        <section class="panel graph-panel">
+            <div class="panel-header">
+                <div class="panel-icon" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="18" cy="5" r="3" />
+                        <circle cx="6" cy="12" r="3" />
+                        <circle cx="18" cy="19" r="3" />
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                </div>
+                <h2 class="panel-title">Knowledge Graph</h2>
+                <div class="graph-stats" id="graph-stats">
+                    Nodes: <span id="node-count">0</span> <button class="info-icon"
+                        data-tooltip="nodes"
+                        tabindex="0" aria-label="Info about nodes" style="margin-right: 8px;">i</button>| Edges: <span
+                        id="edge-count">0</span> <button class="info-icon"
+                        data-tooltip="edges"
+                        tabindex="0" aria-label="Info about edges">i</button>
+                </div>
+            </div>
+
+            <div class="graph-container" id="graph-container">
+                <div id="mynetwork"></div>
+                <div class="empty-state" id="empty-state">
+                    <div class="empty-state-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="18" cy="5" r="3" />
+                            <circle cx="6" cy="12" r="3" />
+                            <circle cx="18" cy="19" r="3" />
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                        </svg>
+                    </div>
+                    <h3 class="empty-state-title">No Graph Data</h3>
+                    <p class="empty-state-description">Upload a policy document and compile, or click "Visualize Graph"
+                        to view existing data</p>
+                </div>
+            </div>
+
+            <div class="graph-hint">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"
+                    style="display: inline; vertical-align: middle; margin-right: 4px;">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16v-4M12 8h.01" />
+                </svg>
+                Scroll to zoom • Drag to pan • Click nodes for details
+            </div>
+    </main>
+
+    <!-- HLD Modal (injected by hld-modal.js) -->
+
+    <script>
+        // API Base URL - Cloud Run service
+        const API_BASE = 'https://q3rtamztti.us-east-2.awsapprunner.com';
+
+        // DOM Elements
+        const fileInput = document.getElementById('file-input');
+        const fileList = document.getElementById('file-list');
+        const dropZone = document.getElementById('drop-zone');
+        const compileBtn = document.getElementById('compile-btn');
+        const statusCard = document.getElementById('status-card');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercent = document.getElementById('progress-percent');
+        const statusText = document.getElementById('status-text');
+        const logsDiv = document.getElementById('logs');
+        const vizBtn = document.getElementById('viz-btn');
+        const nodeCount = document.getElementById('node-count');
+        const edgeCount = document.getElementById('edge-count');
+        const emptyState = document.getElementById('empty-state');
+        const pipelineSteps = document.querySelectorAll('.pipeline-step');
+
+        let currentJobId = null;
+        let pollInterval = null;
+
+        // Drag & Drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateFileList(files);
+            }
+        });
+
+        // File Selection
+        fileInput.addEventListener('change', (e) => {
+            updateFileList(e.target.files);
+        });
+
+        function updateFileList(files) {
+            const fileArray = Array.from(files);
+            if (fileArray.length === 0) {
+                fileList.innerHTML = '';
+                compileBtn.disabled = true;
+                return;
+            }
+
+            fileList.innerHTML = fileArray.map(f => `
+                <div class="file-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    ${f.name}
+                </div>
+            `).join('');
+            compileBtn.disabled = false;
+        }
+
+        // Compile Button
+        compileBtn.addEventListener('click', async () => {
+            const files = fileInput.files;
+            if (files.length === 0) return;
+
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
+
+            // UI Reset
+            compileBtn.disabled = true;
+            statusCard.classList.add('visible');
+            resetPipelineSteps();
+            addLog('Starting upload...', 'info');
+            progressBar.style.width = '0%';
+            progressPercent.textContent = '0%';
+            statusText.textContent = 'Uploading...';
+            statusText.className = 'progress-status';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/compile`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('Upload failed');
+
+                const data = await response.json();
+                currentJobId = data.job_id;
+                addLog(`Job started: ${currentJobId}`, 'info');
+                startPolling();
+
+            } catch (err) {
+                addLog('Error: ' + err.message, 'error');
+                compileBtn.disabled = false;
+            }
+        });
+
+        // Visualize Button
+        vizBtn.addEventListener('click', () => {
+            loadGraph();
+        });
+
+        function startPolling() {
+            if (pollInterval) clearInterval(pollInterval);
+            pollInterval = setInterval(checkStatus, 2000);
+        }
+
+        async function checkStatus() {
+            if (!currentJobId) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/status/${currentJobId}`);
+                const data = await response.json();
+
+                // Update Progress
+                const percent = data.progress || 0;
+                progressBar.style.width = `${percent}%`;
+                progressPercent.textContent = `${percent}%`;
+                statusText.textContent = data.status.replace(/_/g, ' ').toUpperCase();
+
+                // Update pipeline steps based on progress
+                updatePipelineSteps(data.status, percent);
+
+                // Update Logs
+                if (data.logs && data.logs.length > 0) {
+                    logsDiv.innerHTML = '';
+                    data.logs.forEach(log => addLog(log, 'info'));
+                    logsDiv.scrollTop = logsDiv.scrollHeight;
+                }
+
+                if (data.status === 'completed') {
+                    clearInterval(pollInterval);
+                    statusText.textContent = '✓ COMPLETED';
+                    statusText.classList.add('completed');
+                    addLog('Pipeline completed successfully!', 'info');
+                    loadGraph();
+                    compileBtn.disabled = false;
+
+                    // Mark all steps as completed
+                    pipelineSteps.forEach(step => {
+                        step.classList.remove('active');
+                        step.classList.add('completed');
+                        step.querySelector('.step-status').textContent = 'Completed';
+                    });
+                } else if (data.status === 'failed') {
+                    clearInterval(pollInterval);
+                    statusText.textContent = '✗ FAILED';
+                    statusText.classList.add('failed');
+                    addLog('Pipeline failed: ' + (data.error || 'Unknown error'), 'error');
+                    compileBtn.disabled = false;
+                }
+
+            } catch (err) {
+                console.error("Polling error", err);
+            }
+        }
+
+        function updatePipelineSteps(status, percent) {
+            // Reset all steps
+            pipelineSteps.forEach(step => {
+                step.classList.remove('active', 'completed');
+                step.querySelector('.step-status').textContent = 'Pending';
+            });
+
+            // Determine current step based on progress
+            const steps = ['parsing', 'ontology', 'extraction', 'validation', 'building'];
+            const stepIndex = Math.min(Math.floor(percent / 20), 4);
+
+            steps.forEach((stepName, index) => {
+                const step = document.querySelector(`[data-step="${stepName}"]`);
+                if (index < stepIndex) {
+                    step.classList.add('completed');
+                    step.querySelector('.step-status').textContent = 'Completed';
+                } else if (index === stepIndex && percent < 100) {
+                    step.classList.add('active');
+                    step.querySelector('.step-status').textContent = 'Processing...';
+                }
+            });
+        }
+
+        function resetPipelineSteps() {
+            pipelineSteps.forEach(step => {
+                step.classList.remove('active', 'completed');
+                step.querySelector('.step-status').textContent = 'Pending';
+            });
+        }
+
+        function addLog(message, type = 'info') {
+            const time = new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <span class="log-time">${time}</span>
+                <span class="log-message ${type}">${message}</span>
+            `;
+            logsDiv.appendChild(logEntry);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        async function loadGraph() {
+            try {
+                emptyState.style.display = 'none';
+                addLog('Loading graph data...', 'info');
+
+                const response = await fetch(`${API_BASE}/api/graph`);
+                const data = await response.json();
+
+                if (data.nodes && data.nodes.length > 0) {
+                    renderGraph(data);
+                    addLog(`Graph loaded: ${data.nodes.length} nodes, ${data.edges.length} edges`, 'info');
+                } else {
+                    emptyState.style.display = 'flex';
+                    addLog('No graph data available', 'warning');
+                }
+            } catch (err) {
+                console.error("Graph fetch error", err);
+                addLog('Failed to load graph: ' + err.message, 'error');
+                emptyState.style.display = 'flex';
+            }
+        }
+
+        function renderGraph(data) {
+            const container = document.getElementById('mynetwork');
+            emptyState.style.display = 'none';
+
+            // Update stats
+            nodeCount.textContent = data.nodes.length;
+            edgeCount.textContent = data.edges.length;
+
+            const options = {
+                nodes: {
+                    shape: 'dot',
+                    size: 20,
+                    font: {
+                        size: 14,
+                        color: '#ffffff',
+                        face: 'Inter'
+                    },
+                    borderWidth: 2,
+                    color: {
+                        background: '#6366f1',
+                        border: '#8b5cf6',
+                        highlight: {
+                            background: '#8b5cf6',
+                            border: '#a78bfa'
+                        }
+                    }
+                },
+                edges: {
+                    width: 2,
+                    smooth: {
+                        type: 'continuous',
+                        roundness: 0.5
+                    },
+                    color: {
+                        color: 'rgba(99, 102, 241, 0.4)',
+                        highlight: 'rgba(139, 92, 246, 0.8)'
+                    },
+                    font: {
+                        size: 11,
+                        color: '#a0a0b0',
+                        face: 'Inter'
+                    }
+                },
+                physics: {
+                    stabilization: { iterations: 100 },
+                    barnesHut: {
+                        gravitationalConstant: -5000,
+                        springConstant: 0.02,
+                        springLength: 150
+                    }
+                },
+                interaction: {
+                    tooltipDelay: 200,
+                    hideEdgesOnDrag: true,
+                    hover: true
+                },
+                layout: {
+                    improvedLayout: true
+                }
+            };
+
+            // Color nodes by type if label contains type info
+            const coloredNodes = data.nodes.map(node => {
+                const colors = {
+                    'Policy': '#6366f1',
+                    'Rule': '#22c55e',
+                    'Category': '#f59e0b',
+                    'Condition': '#3b82f6',
+                    'Exception': '#ef4444'
+                };
+
+                let nodeColor = '#6366f1';
+                for (const [type, color] of Object.entries(colors)) {
+                    if (node.label && node.label.includes(type)) {
+                        nodeColor = color;
+                        break;
+                    }
+                }
+
+                return {
+                    ...node,
+                    color: {
+                        background: nodeColor,
+                        border: nodeColor,
+                        highlight: {
+                            background: nodeColor,
+                            border: '#ffffff'
+                        }
+                    }
+                };
+            });
+
+            const network = new vis.Network(container, { nodes: coloredNodes, edges: data.edges }, options);
+
+            network.on("click", function (params) {
+                if (params.nodes.length > 0) {
+                    const nodeId = params.nodes[0];
+                    const node = data.nodes.find(n => n.id === nodeId);
+                    console.log("Clicked node:", node);
+                }
+            });
+        }
+
+        // Initialize - hide empty state initially
+        document.addEventListener('DOMContentLoaded', () => {
+            emptyState.style.display = 'flex';
+        });
+
+
+
+
+        // ============================================
+        // Info Tooltip System
+        // ============================================
+        const InfoTooltip = {
+            tooltips: {
+                'visualize': {
+                    title: 'Visualize Knowledge Base',
+                    text: 'Load and display the current knowledge graph without recompiling. Shows the existing graph from Neo4j.'
+                },
+                'upload': {
+                    title: 'Policy Upload',
+                    text: 'Upload PDF policy documents to be processed and compiled into a queryable knowledge graph.'
+                },
+                'parsing': {
+                    title: 'Document Parsing',
+                    text: 'Converts uploaded PDF policy documents into machine-readable text using LlamaParse for accurate extraction.'
+                },
+                'ontology': {
+                    title: 'Ontology Design',
+                    text: 'AI designs the knowledge graph schema, defining entity types (e.g., Policy, Condition, Action) and their relationships.'
+                },
+                'extraction': {
+                    title: 'Entity Extraction',
+                    text: 'Extracts specific policy rules, conditions, thresholds, and relationships from the parsed text using LLM.'
+                },
+                'validation': {
+                    title: 'Critic Validation',
+                    text: 'Quality check phase where AI reviews extracted entities for accuracy, completeness, and consistency before building the graph.'
+                },
+                'building': {
+                    title: 'Graph Building',
+                    text: 'Constructs the Neo4j knowledge graph by creating nodes and edges from validated entities and relationships.'
+                },
+                'nodes': {
+                    title: 'Node Count',
+                    text: 'Total number of entities in the graph (policies, rules, conditions, categories, exceptions, etc.).'
+                },
+                'edges': {
+                    title: 'Edge Count',
+                    text: 'Total number of relationships connecting entities, defining how policies relate to conditions and actions.'
+                }
+            },
+
+            init() {
+                this.overlay = document.createElement('div');
+                this.overlay.className = 'tooltip-overlay hidden';
+                document.body.appendChild(this.overlay);
+
+                this.bubble = document.createElement('div');
+                this.bubble.className = 'tooltip-bubble';
+                document.body.appendChild(this.bubble);
+
+                this.hoverTimeout = null;
+                this.hideTimeout = null;
+                this.isHovering = false;
+                this.triggeredByClick = false;
+
+                this.overlay.addEventListener('click', () => this.forceHide());
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') this.forceHide();
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (this.triggeredByClick && this.activeIcon) {
+                        const clickedIcon = e.target.closest('.info-icon');
+                        const clickedBubble = e.target.closest('.tooltip-bubble');
+                        if (!clickedIcon && !clickedBubble) {
+                            this.forceHide();
+                        }
+                    }
+                });
+
+                document.querySelectorAll('.info-icon').forEach(icon => {
+                    icon.addEventListener('click', (e) => this.toggle(e, icon));
+                    icon.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            this.toggle(e, icon);
+                        }
+                    });
+
+                    icon.addEventListener('mouseenter', () => {
+                        this.isHovering = true;
+                        if (this.hideTimeout) clearTimeout(this.hideTimeout);
+                        this.hoverTimeout = setTimeout(() => {
+                            if (this.isHovering) this.show(icon, false);
+                        }, 200);
+                    });
+
+                    icon.addEventListener('mouseleave', () => {
+                        this.isHovering = false;
+                        if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
+                        // Hide immediately when hover-triggered
+                        if (!this.triggeredByClick) {
+                            this.hide();
+                        }
+                    });
+                });
+            },
+
+            toggle(event, icon) {
+                event.stopPropagation();
+                if (this.activeIcon === icon && this.triggeredByClick) {
+                    this.forceHide();
+                } else {
+                    this.triggeredByClick = true;
+                    this.show(icon, true);
+                }
+            },
+
+            show(icon, fromClick = false) {
+                const tooltipId = icon.getAttribute('data-tooltip');
+                const content = this.tooltips[tooltipId];
+                if (!content) return;
+
+                if (this.activeIcon === icon && this.bubble.classList.contains('visible')) return;
+
+                if (this.activeIcon && this.activeIcon !== icon) {
+                    this.activeIcon.classList.remove('active');
+                }
+
+                this.bubble.innerHTML = `
+                    <div class="tooltip-title">${content.title}</div>
+                    <div class="tooltip-text">${content.text}</div>
+                `;
+
+                // Temporarily make bubble visible off-screen for accurate height measurement
+                this.bubble.style.visibility = 'hidden';
+                this.bubble.style.display = 'block';
+                this.bubble.style.opacity = '0';
+                this.bubble.classList.add('visible');
+
+                const rect = icon.getBoundingClientRect();
+                const bubbleWidth = 320;
+                const bubbleHeight = this.bubble.offsetHeight;
+                const padding = 12;
+
+                // Document-relative coords (position:absolute on body)
+                let left = rect.left + window.scrollX;
+                let top = rect.bottom + padding + window.scrollY;
+
+                // Reset arrow classes
+                this.bubble.classList.remove('arrow-right', 'arrow-bottom');
+
+                // Check right-edge overflow (viewport-relative)
+                if (rect.left + bubbleWidth > window.innerWidth - padding) {
+                    left = window.innerWidth - bubbleWidth - padding + window.scrollX;
+                    this.bubble.classList.add('arrow-right');
+                }
+
+                // Show above if no room below (viewport-relative)
+                if (rect.bottom + padding + bubbleHeight > window.innerHeight - padding) {
+                    top = rect.top - bubbleHeight - padding + window.scrollY;
+                    this.bubble.classList.add('arrow-bottom');
+                }
+
+                this.bubble.style.left = `${Math.max(padding, left)}px`;
+                this.bubble.style.top = `${Math.max(padding, top)}px`;
+
+                // Point arrow at the icon center
+                const iconCenterX = rect.left + rect.width / 2 + window.scrollX;
+                const bubbleLeft = Math.max(padding, left);
+                const arrowOffset = Math.max(10, Math.min(iconCenterX - bubbleLeft - 6, bubbleWidth - 22));
+                this.bubble.style.setProperty('--arrow-left', `${arrowOffset}px`);
+
+                // Restore visibility
+                this.bubble.style.visibility = '';
+                this.bubble.style.display = '';
+                this.bubble.style.opacity = '';
+
+                if (fromClick) {
+                    this.overlay.classList.remove('hidden');
+                    this.triggeredByClick = true;
+                } else {
+                    this.overlay.classList.add('hidden');
+                    this.triggeredByClick = false;
+                }
+
+                this.bubble.classList.add('visible');
+                icon.classList.add('active');
+                this.activeIcon = icon;
+            },
+
+            hide() {
+                if (this.triggeredByClick && this.isHovering) return;
+                this._doHide();
+            },
+
+            forceHide() {
+                this._doHide();
+            },
+
+            _doHide() {
+                this.overlay.classList.add('hidden');
+                this.bubble.classList.remove('visible');
+                if (this.activeIcon) {
+                    this.activeIcon.classList.remove('active');
+                    this.activeIcon = null;
+                }
+                this.triggeredByClick = false;
+            }
+        };
+
+        // ============================================
+        // Onboarding Banner
+        // ============================================
+        function initOnboarding() {
+            const banner = document.getElementById('onboardingBanner');
+            const dismissBtn = document.getElementById('dismissOnboarding');
+
+            if (!banner) return;
+
+            const dismissed = localStorage.getItem('varaPolicyOnboardingDismissed');
+            if (dismissed) {
+                banner.classList.add('hidden');
+            }
+
+            if (dismissBtn) {
+                dismissBtn.addEventListener('click', () => {
+                    banner.classList.add('hidden');
+                    localStorage.setItem('varaPolicyOnboardingDismissed', 'true');
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initOnboarding();
+            InfoTooltip.init();
+        });
+    </script>
+
+    <!-- Shared Footer (injected by navbar.js) -->
+    <div id="footer-placeholder"></div>
+    <script src="../navbar.js"></script>
+    <script src="../hld-modal.js"></script>
+</body>
+
+</html>

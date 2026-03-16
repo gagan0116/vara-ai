@@ -1,0 +1,50 @@
+# Virtual environment
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Artifacts and temp files
+artifacts/
+*.log
+*.tmp
+
+# Test files
+test_*.py
+*_test.py
+
+# Large files not needed at runtime
+*.pdf
+invoices/
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Documentation
+README.md
+
+# Environment files (secrets should be passed as env vars)
+.env
+.env.*
+
+# Build files
+cloudbuild.yaml

@@ -1,0 +1,19 @@
+# Exclude everything by default
+*
+
+# Whitelist what we need
+!mcp_processor/
+!doc_server/
+!defect_analyzer/
+!db_verification/
+!policy_compiler_agents/
+!neo4j_graph_engine/
+!cloudbuild_mcp_processor.yaml
+!requirements.txt
+
+# Explicitly ignore
+.git
+.venv
+venv
+__pycache__
+*.pyc

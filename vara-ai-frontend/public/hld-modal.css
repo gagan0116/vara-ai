@@ -1,0 +1,1105 @@
+/* ============================================
+   HLD Pipeline Diagram Modal Styles
+   Interactive, Animated System Architecture View
+   Shared across all pages
+   ============================================ */
+
+/* Modal Overlay */
+.hld-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    animation: fadeIn 0.3s ease;
+}
+
+.hld-modal-overlay.hidden {
+    display: none;
+}
+
+/* Modal Content */
+.hld-modal-content {
+    background: linear-gradient(145deg, rgba(18, 18, 26, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 1400px;
+    max-height: 90vh;
+    overflow: hidden;
+    /* Contain content within modal, enable scrolling in body */
+    box-shadow:
+        0 0 60px rgba(99, 102, 241, 0.15),
+        0 0 100px rgba(139, 92, 246, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Modal Header */
+.hld-modal-header {
+    padding: var(--spacing-xl) var(--spacing-2xl);
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    background: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%);
+}
+
+.hld-modal-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.hld-modal-title svg {
+    color: var(--accent-primary);
+    filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+}
+
+.hld-modal-title h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, #a0a0b0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hld-modal-subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    margin-top: var(--spacing-xs);
+    margin-left: 40px;
+}
+
+.hld-modal-close {
+    position: absolute;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+}
+
+.hld-modal-close:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--error);
+    transform: rotate(90deg);
+}
+
+.hld-modal-close svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Modal Body */
+.hld-modal-body {
+    padding: var(--spacing-xl) var(--spacing-2xl);
+    padding-bottom: var(--spacing-2xl);
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(90vh - 120px);
+    flex: 1;
+}
+
+/* Scrollbar styling for modal body */
+.hld-modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.hld-modal-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-full);
+}
+
+.hld-modal-body::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.4);
+    border-radius: var(--radius-full);
+    transition: background var(--transition-base);
+}
+
+.hld-modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.6);
+}
+
+/* Pipeline Container */
+.hld-pipeline-container {
+    position: relative;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    padding-bottom: 80px;
+    /* Space for tooltips below */
+    min-height: 300px;
+    overflow: visible;
+}
+
+/* SVG Flow Lines — replaced by CSS animated dots */
+.hld-flow-lines {
+    display: none;
+}
+
+/* Pipeline Steps Row */
+.hld-steps-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+    position: relative;
+    z-index: 1;
+}
+
+/* Individual Step */
+.hld-step {
+    flex: 1;
+    max-width: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg);
+    background: rgba(26, 26, 46, 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    z-index: 3;
+    backdrop-filter: blur(10px);
+}
+
+.hld-step:hover {
+    border-color: var(--accent-primary);
+    background: rgba(99, 102, 241, 0.1);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.hld-step:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+/* Step Icon */
+.hld-step-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-xs);
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hld-step-icon::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+    background: inherit;
+    opacity: 0.3;
+    filter: blur(8px);
+    z-index: -1;
+}
+
+.hld-step-icon svg {
+    width: 28px;
+    height: 28px;
+    color: white;
+}
+
+.hld-step.active .hld-step-icon {
+    transform: scale(1.1);
+}
+
+/* Icon Color Variations */
+.hld-step-icon.email {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.hld-step-icon.gmail {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.hld-step-icon.classify {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.hld-step-icon.docs {
+    background: linear-gradient(135deg, #d946ef 0%, #c026d3 100%);
+    /* Fuchsia */
+}
+
+.hld-step-icon.database {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    /* Cyan */
+}
+
+.hld-step-icon.policy {
+    background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+    /* Rose/Red */
+}
+
+.hld-step-icon.decision {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+/* Step Label */
+.hld-step-label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    line-height: 1.3;
+}
+
+/* Step Badge */
+.hld-step-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+}
+
+.hld-step-badge.input {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.hld-step-badge.trigger {
+    background: rgba(249, 115, 22, 0.15);
+    color: #fb923c;
+    border-color: rgba(249, 115, 22, 0.3);
+}
+
+.hld-step-badge.nova {
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.hld-step-badge.mcp {
+    background: rgba(217, 70, 239, 0.15);
+    color: #e879f9;
+    border-color: rgba(217, 70, 239, 0.3);
+}
+
+.hld-step-badge.postgres {
+    background: rgba(6, 182, 212, 0.15);
+    color: #22d3ee;
+    border-color: rgba(6, 182, 212, 0.3);
+}
+
+.hld-step-badge.neo4j {
+    background: rgba(225, 29, 72, 0.15);
+    color: #fb7185;
+    border-color: rgba(225, 29, 72, 0.3);
+}
+
+.hld-step-badge.output {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+/* Step Tooltip - Positioned BELOW the step */
+.hld-step-tooltip {
+    position: absolute;
+    top: calc(100% + 16px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    width: 280px;
+    padding: var(--spacing-lg);
+    background: rgba(26, 26, 46, 0.98);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    border-radius: var(--radius-lg);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(99, 102, 241, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
+    backdrop-filter: blur(20px);
+}
+
+/* Arrow pointing UP to the step */
+.hld-step-tooltip::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 16px;
+    height: 16px;
+    background: rgba(26, 26, 46, 0.98);
+    border-left: 1px solid rgba(99, 102, 241, 0.4);
+    border-top: 1px solid rgba(99, 102, 241, 0.4);
+}
+
+/* Click-to-toggle: show tooltip when step has .active class */
+.hld-step.active .hld-step-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Active step highlight (desktop) */
+.hld-step.active {
+    border-color: var(--accent-primary);
+    background: rgba(99, 102, 241, 0.1);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+/* Edge-aware tooltip positioning for first step */
+.hld-step:first-child .hld-step-tooltip {
+    left: 0;
+    transform: translateX(0) translateY(-10px);
+}
+
+.hld-step:first-child .hld-step-tooltip::after {
+    left: 70px;
+}
+
+.hld-step:first-child.active .hld-step-tooltip {
+    transform: translateX(0) translateY(0);
+}
+
+/* Edge-aware tooltip positioning for last step */
+.hld-step:last-child .hld-step-tooltip {
+    left: auto;
+    right: 0;
+    transform: translateX(0) translateY(-10px);
+}
+
+.hld-step:last-child .hld-step-tooltip::after {
+    left: auto;
+    right: 70px;
+}
+
+.hld-step:last-child.active .hld-step-tooltip {
+    transform: translateX(0) translateY(0);
+}
+
+.hld-step-tooltip h4 {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-primary);
+}
+
+.hld-step-tooltip p {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: var(--spacing-sm);
+}
+
+.hld-step-tooltip strong {
+    color: var(--accent-primary);
+}
+
+.tooltip-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.tooltip-details .detail-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.tooltip-details .detail-item svg {
+    color: var(--accent-primary);
+    flex-shrink: 0;
+}
+
+/* Category Colors in Tooltip */
+.tooltip-details .category-return {
+    background: rgba(249, 115, 22, 0.15);
+    color: #fb923c;
+    border-color: rgba(249, 115, 22, 0.3);
+}
+
+.tooltip-details .category-refund {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.tooltip-details .category-replace {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.tooltip-details .decision-approve {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.tooltip-details .decision-deny {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.tooltip-details .decision-review {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+/* Technology Legend */
+.hld-legend {
+    margin-top: var(--spacing-2xl);
+    padding: var(--spacing-lg);
+    background: rgba(26, 26, 46, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.hld-legend h4 {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: var(--spacing-md);
+}
+
+.legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.legend-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateY(-1px);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.legend-dot::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    background: inherit;
+    opacity: 0.4;
+    filter: blur(4px);
+}
+
+.legend-dot.nova {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.legend-dot.mcp {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+}
+
+.legend-dot.neo4j {
+    background: linear-gradient(135deg, #008cc1, #0066a1);
+}
+
+.legend-dot.postgres {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+}
+
+.legend-dot.gcp {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+/* Tablet / medium screens — vertical pipeline flow */
+@media (max-width: 1200px) {
+    .hld-flow-lines {
+        display: none;
+    }
+
+    .hld-modal-content {
+        overflow: hidden;
+    }
+
+    .hld-modal-body {
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .hld-pipeline-container {
+        padding-bottom: var(--spacing-xl);
+        min-height: auto;
+    }
+
+    /* Vertical pipeline layout */
+    .hld-steps-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hld-step {
+        max-width: 340px;
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md) var(--spacing-lg);
+        position: relative;
+    }
+
+    .hld-step-icon {
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+
+    /* Right side: label + badge stacked */
+    .hld-step-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hld-step-label {
+        text-align: left;
+    }
+
+    /* Remove per-step pseudo-elements on mobile */
+    .hld-step::before,
+    .hld-step::after {
+        display: none !important;
+    }
+
+    /* Full-height vertical connection line behind all steps */
+    .hld-steps-row::before {
+        content: '';
+        position: absolute;
+        top: 5%;
+        bottom: 5%;
+        left: 50%;
+        width: 2px;
+        transform: translateX(-50%);
+        background: linear-gradient(180deg,
+                rgba(99, 102, 241, 0.3) 0%,
+                rgba(139, 92, 246, 0.4) 50%,
+                rgba(99, 102, 241, 0.3) 100%);
+        z-index: -1;
+    }
+
+    /* Single animated dot traversing the vertical pipeline top-to-bottom */
+    .hld-steps-row::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #818cf8;
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.8), 0 0 20px rgba(99, 102, 241, 0.4);
+        transform: translateX(-50%) translateY(-50%);
+        z-index: 1;
+        pointer-events: none;
+        animation: verticalPipelineDot 9s ease-in-out infinite;
+    }
+
+    @keyframes verticalPipelineDot {
+        0% {
+            top: 5%;
+            opacity: 0;
+        }
+
+        5% {
+            opacity: 1;
+        }
+
+        95% {
+            opacity: 1;
+        }
+
+        100% {
+            top: 95%;
+            opacity: 0;
+        }
+    }
+
+    /* Spacing for connector gap */
+    .hld-step+.hld-step {
+        margin-top: 24px;
+    }
+
+    /* Tap-to-expand tooltips */
+    .hld-step-tooltip {
+        position: static;
+        transform: none;
+        width: 100%;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        padding: 0;
+        margin: 0;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+        transition: max-height 0.35s ease, opacity 0.25s ease, padding 0.35s ease, margin 0.35s ease;
+        backdrop-filter: none;
+        flex-basis: 100%;
+    }
+
+    .hld-step-tooltip::after {
+        display: none;
+    }
+
+    /* Make step a wrapping flex so tooltip goes below */
+    .hld-step {
+        flex-wrap: wrap;
+    }
+
+    /* Override desktop tooltip positioning — make inline */
+    .hld-step.active .hld-step-tooltip {
+        position: static;
+        transform: none;
+        left: auto;
+        max-height: 300px;
+        opacity: 1;
+        visibility: visible;
+        padding: var(--spacing-md);
+        margin-top: var(--spacing-sm);
+        background: rgba(26, 26, 46, 0.95);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        border-radius: var(--radius-md);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        flex-basis: 100%;
+    }
+
+    /* Active step highlight */
+    .hld-step.active {
+        border-color: var(--accent-primary);
+        background: rgba(99, 102, 241, 0.1);
+        box-shadow:
+            0 8px 24px rgba(0, 0, 0, 0.3),
+            0 0 20px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Prevent hover shift */
+    .hld-step:hover {
+        transform: none;
+    }
+
+    /* Edge-aware overrides — inline tooltip, no positioning needed */
+    .hld-step:first-child .hld-step-tooltip,
+    .hld-step:last-child .hld-step-tooltip {
+        left: auto;
+        right: auto;
+        transform: none;
+    }
+
+    .hld-step:first-child.active .hld-step-tooltip,
+    .hld-step:last-child.active .hld-step-tooltip {
+        transform: none;
+    }
+
+    .hld-legend {
+        margin-top: var(--spacing-xl);
+    }
+}
+
+/* Small tablets / large phones */
+@media (max-width: 900px) {
+    .hld-modal-overlay {
+        padding: var(--spacing-md);
+    }
+
+    .hld-modal-header {
+        padding: var(--spacing-lg) var(--spacing-xl);
+    }
+
+    .hld-modal-body {
+        padding: var(--spacing-lg);
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .hld-modal-overlay {
+        padding: var(--spacing-sm);
+    }
+
+    .hld-modal-content {
+        max-height: 100vh;
+        max-height: 100dvh;
+        border-radius: var(--radius-lg);
+    }
+
+    .hld-modal-header {
+        padding: var(--spacing-lg);
+        flex-shrink: 0;
+    }
+
+    .hld-modal-body {
+        padding: var(--spacing-md);
+        max-height: none;
+    }
+
+    .hld-pipeline-container {
+        padding: var(--spacing-sm) 0;
+        padding-bottom: var(--spacing-md);
+    }
+
+    .hld-modal-title h2 {
+        font-size: var(--font-size-xl);
+    }
+
+    .hld-step {
+        max-width: 100%;
+        padding: var(--spacing-md);
+    }
+
+    .hld-step-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .hld-step-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .legend-items {
+        gap: var(--spacing-sm);
+    }
+
+    .hld-legend {
+        margin-top: var(--spacing-lg);
+    }
+}
+
+/* Very small phones */
+@media (max-width: 420px) {
+    .hld-modal-overlay {
+        padding: 0;
+    }
+
+    .hld-modal-content {
+        border-radius: 0;
+        max-height: 100vh;
+        max-height: 100dvh;
+    }
+
+    .hld-step {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .hld-step-icon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .hld-step-label {
+        font-size: var(--font-size-xs);
+    }
+
+    .hld-step-tooltip h4 {
+        font-size: var(--font-size-xs);
+    }
+
+    .hld-step-badge {
+        font-size: 9px;
+        padding: 3px 8px;
+    }
+}
+
+/* Small Desktop Screens - Better spacing for HLD tiles */
+@media (min-width: 1201px) and (max-width: 1400px) {
+    .hld-modal-content {
+        max-width: 1200px;
+    }
+
+    .hld-step {
+        max-width: 140px;
+        padding: var(--spacing-md);
+    }
+
+    .hld-step-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .hld-step-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .hld-step-label {
+        font-size: 13px;
+    }
+
+    .hld-step-tooltip h4 {
+        font-size: 13px;
+    }
+
+    .hld-step-badge {
+        font-size: 9px;
+        padding: 3px 8px;
+    }
+
+    .hld-step-tooltip {
+        width: 260px;
+    }
+}
+
+/* Short Screen Heights - Optimize for limited vertical space */
+@media (max-height: 700px) {
+    .hld-modal-overlay {
+        padding: var(--spacing-md);
+        align-items: flex-start;
+    }
+
+    .hld-modal-content {
+        max-height: 95vh;
+        margin-top: var(--spacing-md);
+    }
+
+    .hld-modal-header {
+        padding: var(--spacing-md) var(--spacing-lg);
+    }
+
+    .hld-modal-body {
+        padding: var(--spacing-md) var(--spacing-lg);
+        max-height: calc(95vh - 80px);
+    }
+
+    .hld-pipeline-container {
+        padding: var(--spacing-sm) var(--spacing-md);
+        padding-bottom: 40px;
+        min-height: auto;
+    }
+
+    .hld-modal-title h2 {
+        font-size: var(--font-size-lg);
+    }
+
+    .hld-modal-subtitle {
+        font-size: var(--font-size-xs);
+    }
+
+    .hld-step {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .hld-step-icon {
+        width: 45px;
+        height: 45px;
+    }
+
+    .hld-step-icon svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .hld-step-label {
+        font-size: 12px;
+    }
+
+    .hld-step-tooltip h4 {
+        font-size: 12px;
+    }
+
+    .hld-legend {
+        margin-top: var(--spacing-md);
+        padding-top: var(--spacing-md);
+    }
+
+    .legend-items {
+        gap: var(--spacing-xs);
+    }
+}
+
+/* Connection Lines Animation for Desktop */
+@media (min-width: 1201px) {
+
+    /* Connection line between steps */
+    .hld-step::before {
+        content: '';
+        position: absolute;
+        right: -50%;
+        top: 50%;
+        width: 50%;
+        height: 2px;
+        background: linear-gradient(90deg,
+                rgba(99, 102, 241, 0.5) 0%,
+                rgba(139, 92, 246, 0.3) 50%,
+                rgba(99, 102, 241, 0.5) 100%);
+        transform: translateY(-50%);
+        z-index: -1;
+    }
+
+    .hld-step:last-child::before {
+        display: none;
+    }
+
+    .hld-step:hover::before {
+        background: linear-gradient(90deg,
+                rgba(99, 102, 241, 0.8) 0%,
+                rgba(139, 92, 246, 0.5) 50%,
+                rgba(99, 102, 241, 0.8) 100%);
+    }
+
+    /* Single animated dot traversing the entire pipeline left-to-right */
+    .hld-steps-row {
+        overflow: visible;
+    }
+
+    /* Full-width pipeline connection line behind all steps */
+    .hld-steps-row::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 5%;
+        right: 5%;
+        height: 2px;
+        background: linear-gradient(90deg,
+                rgba(99, 102, 241, 0.3) 0%,
+                rgba(139, 92, 246, 0.4) 50%,
+                rgba(99, 102, 241, 0.3) 100%);
+        transform: translateY(-50%);
+        z-index: -1;
+    }
+
+    .hld-steps-row::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #818cf8;
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.8), 0 0 20px rgba(99, 102, 241, 0.4);
+        transform: translateY(-50%) translateX(-50%);
+        z-index: 1;
+        pointer-events: none;
+        animation: pipelineDot 9s ease-in-out infinite;
+    }
+
+    @keyframes pipelineDot {
+        0% {
+            left: 5%;
+            opacity: 0;
+        }
+
+        5% {
+            opacity: 1;
+        }
+
+        95% {
+            opacity: 1;
+        }
+
+        100% {
+            left: 95%;
+            opacity: 0;
+        }
+    }
+
+    /* Hover shows tooltip on desktop */
+    .hld-step:hover .hld-step-tooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .hld-step:first-child:hover .hld-step-tooltip {
+        transform: translateX(0) translateY(0);
+    }
+
+    .hld-step:last-child:hover .hld-step-tooltip {
+        transform: translateX(0) translateY(0);
+    }
+
+    /* Hover step highlight */
+    .hld-step:hover {
+        transform: translateY(-8px) scale(1.05);
+    }
+
+    .hld-step:hover .hld-step-icon {
+        transform: scale(1.1);
+    }
+}
