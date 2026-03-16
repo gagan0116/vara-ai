@@ -305,19 +305,18 @@ VARA_AI_NOVA/
 - Python 3.11+
 - AWS Credentials / Nova Access tokens
 - Neo4j Aura instance
+- Google Cloud account with enabled APIs
 - LlamaParse API key
 
 ### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/YourUsername/vara-ai.git
-cd vara-ai
+git clone https://github.com/gagan0116/vara-ai.git
 
 # Create virtual environment
 python -m venv venv
 venv\Scripts\activate  # Windows
-# source venv/bin/activate  # macOS/Linux
 
 # Install dependencies
 pip install -r requirements.txt
@@ -340,15 +339,17 @@ NEO4J_URI=neo4j+s://your-instance.databases.neo4j.io
 NEO4J_USER=neo4j
 NEO4J_PASSWORD=your_neo4j_password
 
-# PostgreSQL (Cloud SQL configured)
-DB_HOST=your_host_ip
-DB_PORT=5432
-DB_NAME=refunds_db
-DB_USER=postgres
-DB_PASSWORD=your_db_password
+# Cloud SQL (PostgreSQL)
+CLOUD_INSTANCE=project:region:instance
+CLOUD_DB_NAME=refunds_db
+CLOUD_DB_USER=postgres
+CLOUD_DB_PASS=your_db_password
 
 # LlamaParse
 LLAMA_CLOUD_API_KEY=your_llamaparse_key
+
+# Google Cloud Storage
+GCS_BUCKET_NAME=your_bucket_name
 ```
 
 ### Running Locally
@@ -356,10 +357,6 @@ LLAMA_CLOUD_API_KEY=your_llamaparse_key
 ```bash
 # Run the Main MCP Testing client
 python mcp_client.py
-
-# Run the backend Processor module
-cd mcp_processor
-python app.py
 
 # Run the Policy Compiler web service
 cd knowledge_base_server
@@ -379,6 +376,5 @@ python main.py
 
 ## 🔗 Links
 
-- **GitHub:** [https://github.com/YourUsername/vara-ai](https://github.com/YourUsername/vara-ai)
+- **GitHub:** [https://github.com/gagan0116/vara-ai.git](https://github.com/YourUsername/vara-ai)
 - **Live Demo:** [https://staging.d1vug68j94viep.amplifyapp.com/](https://staging.d1vug68j94viep.amplifyapp.com/)
-- **Hackathon:** [Amazon Nova AI Hackathon](#)
